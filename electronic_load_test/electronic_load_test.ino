@@ -1,8 +1,9 @@
-#include <ArduinoJson.h>
+#include <ArduinoJson.h> //Using Version 5.13.5
 
 #define INPUT_VOLTAGE 2
 int value;
-char txt[200];
+String txt;
+
 
 
 void setup() {
@@ -13,29 +14,29 @@ void setup() {
 }
 
 void loop() {
-  StaticJsonDocument<200> jsonBuffer;
+  StaticJsonBuffer<200> jsonBuffer;
   
-  if(Serial.available() > 0){
-    
-    for(int i = 0; i<200; i++){
-      txt[i] = (char) Serial.read();
-    }
-    
-    DeserializationError err = deserializeJson(jsonBuffer, txt);
+ if(Serial.available() > 0){
+      
+    txt = Serial.readString();
+    //txt = "{\"value\":\"1\"}";
+    JsonObject& root = jsonBuffer.parseObject(txt);
 
-    //Check if the json was deserialized properly
-    if(err){
-    Serial.print(F("deserializeJson() failed with code "));
-    Serial.println(err.f_str());
+    //Check if the json was decoded properly
+    if(!root.success()){
+      Serial.println("parseObject() failed");
+      return false;
     }
-
-    value = (int) jsonBuffer["value"];
-    Serial.print(value);
-    
-    if(value == 1){
-      digitalWrite(INPUT_VOLTAGE, HIGH);
-    }else {
-      digitalWrite(INPUT_VOLTAGE,LOW);
+    else{
+      value = (int) root["value"];
+      //value = 1;
+      
+      if(value == 1){
+        digitalWrite(INPUT_VOLTAGE, HIGH);
+      }else {
+        digitalWrite(INPUT_VOLTAGE,LOW);
+      }
     }
   }
+  Serial.print(value);
 }
