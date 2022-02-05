@@ -2,7 +2,7 @@
 
 #define INPUT_VOLTAGE 2
 int value;
-String txt;
+char txt[200];
 
 
 
@@ -11,21 +11,24 @@ void setup() {
   
   //Define signals for interfacing
   pinMode(2, OUTPUT);
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
 }
 
 void loop() {
   StaticJsonBuffer<200> jsonBuffer;
   
  if(Serial.available() > 0){
-      
-    txt = Serial.readString();
+    
+    Serial.readBytesUntil('\n', txt, 200);
     //txt = "{\"value\":\"1\"}";
     JsonObject& root = jsonBuffer.parseObject(txt);
 
     //Check if the json was decoded properly
     if(!root.success()){
       Serial.println("parseObject() failed");
-      return false;
+      digitalWrite(13, HIGH);  
+      //return false;
     }
     else{
       value = (int) root["value"];
@@ -38,5 +41,5 @@ void loop() {
       }
     }
   }
-  Serial.print(value);
+  Serial.print(txt);//value);
 }
