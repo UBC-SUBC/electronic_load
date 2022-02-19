@@ -15,6 +15,7 @@ void setup() {
   pinMode(2, OUTPUT);
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
+  Serial.print("Initial Message\n");
 }
 
 void loop() {
@@ -30,24 +31,27 @@ void loop() {
     if(!root.success()){
       Serial.println("parseObject() failed");
       digitalWrite(13, HIGH);  
-      //return false;
     }
     else{
+      //Extract info from decoded json
       power = (int) root["power"];
       current = (int) root["current"];
       mode = (bool) root ["mode"];
 
       //Need to set voltage between 0-5 volts
       if(mode){
-        digitalWrite(INPUT_VOLTAGE, HIGH);
-          root["power"] = "1";
+          digitalWrite(INPUT_VOLTAGE, HIGH);
+          root["power"] = 1; //For testing
           root.printTo(Serial);
-        //Serial.print("Hello!");
+          Serial.print("\n"); //Try to do the line endings thing so that the code is more responsive and we don't need to specify a size to read
       }
       else{
         digitalWrite(INPUT_VOLTAGE, LOW);
+       root["current"] = "100"; //For testing
+       root.printTo(Serial);
+       Serial.print("\n");
       }
     }
   }
-  //Serial.print(txt);
+  //Serial.print("Buffer");
 }
