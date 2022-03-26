@@ -1,13 +1,12 @@
 #include<Wire.h> 
-#define MCP4725 0x60 //Not sure if this should be 0x60, 0x61 or 0x62
+#define MCP4725 0x60 //MCP Address is 0x60 because our board has A0 grounded
 
 unsigned int DAC_in;
 byte buffer[3];
-double DAC_out;
+double DAC_out; //Make sure DAC_out is a double so no values get truncated
 
 void setup() {
   Wire.begin();
-  //pinMode(A1, INPUT);
   Serial.begin(115200);
 }
 
@@ -24,7 +23,7 @@ void loop() {
   Wire.write(buffer[1]);
   Wire.write(buffer[2]);
   Wire.endTransmission();
-
+  
   DAC_out = 5.0*analogRead(A1)/1023.0;
 
   Serial.println("DAC_out: ");
